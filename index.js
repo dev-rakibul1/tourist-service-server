@@ -29,12 +29,26 @@ run().catch((err) => console.log(err.message));
 const serviceCollection = client
   .db("tourist-service-server")
   .collection("tourist-data");
+// all service
+const touristAllServices = client
+  .db("tourist-service-server")
+  .collection("tourist-all-services");
 console.log("Database connected");
 
 // service query
 app.get("/services", async (req, res) => {
   try {
     const cursor = serviceCollection.find({});
+    const result = await cursor.limit(3).toArray();
+    res.send(result);
+  } finally {
+  }
+});
+
+// tourist all services
+app.get("/tourist-all-services", async (req, res) => {
+  try {
+    const cursor = touristAllServices.find({});
     const result = await cursor.toArray();
     res.send(result);
   } finally {
