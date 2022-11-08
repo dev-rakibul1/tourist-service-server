@@ -35,6 +35,12 @@ const touristAllServices = client
   .collection("tourist-all-services");
 console.log("Database connected");
 
+// booking info
+const bookingInfo = client
+  .db("tourist-service-server")
+  .collection("BookingInfo");
+console.log("Database connected");
+
 // service query
 app.get("/services", async (req, res) => {
   try {
@@ -64,6 +70,24 @@ app.get("/tourist-all-services/:id", async (req, res) => {
     console.log(result);
     res.send(result);
   } finally {
+  }
+});
+
+// post method
+app.post("/booking", async (req, res) => {
+  const result = await bookingInfo.insertOne(req.body);
+  console.log(result);
+
+  if (result.acknowledged) {
+    res.send({
+      success: true,
+      message: "Your form submit is successfully",
+    });
+  } else {
+    res.send({
+      success: false,
+      error: "Your form send is fail!",
+    });
   }
 });
 
