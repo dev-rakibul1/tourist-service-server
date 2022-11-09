@@ -39,7 +39,9 @@ console.log("Database connected");
 const bookingInfo = client
   .db("tourist-service-server")
   .collection("BookingInfo");
-console.log("Database connected");
+
+// blog information
+const blogInfo = client.db("tourist-service-server").collection("blog");
 
 // service query
 app.get("/services", async (req, res) => {
@@ -71,6 +73,13 @@ app.get("/tourist-all-services/:id", async (req, res) => {
     res.send(result);
   } finally {
   }
+});
+
+// blog data query
+app.get("/blog", async (req, res) => {
+  const cursor = blogInfo.find({});
+  const result = await cursor.toArray();
+  res.send(result);
 });
 
 // post method
