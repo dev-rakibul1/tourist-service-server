@@ -43,6 +43,9 @@ const bookingInfo = client
 // blog information
 const blogInfo = client.db("tourist-service-server").collection("blog");
 
+// user rating
+const userRating = client.db("tourist-service-server").collection("raging");
+
 // blog information
 const newServices = client
   .db("tourist-service-server")
@@ -97,6 +100,16 @@ app.get("/newServices", async (req, res) => {
   }
 });
 
+// rating query
+app.get("/userRating", async (req, res) => {
+  try {
+    const cursor = userRating.find({});
+    const result = await cursor.toArray();
+    res.send(result);
+  } finally {
+  }
+});
+
 // post method
 app.post("/booking", async (req, res) => {
   const result = await bookingInfo.insertOne(req.body);
@@ -112,6 +125,25 @@ app.post("/booking", async (req, res) => {
       success: false,
       error: "Your form send is fail!",
     });
+  }
+});
+
+app.post("/userRating", async (req, res) => {
+  try {
+    const result = await userRating.insertOne(req.body);
+
+    if (result.acknowledged) {
+      res.send({
+        success: true,
+        message: "Thanks for reviews",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Fail! your reviews",
+      });
+    }
+  } finally {
   }
 });
 
@@ -142,6 +174,28 @@ app.delete("/newServices/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
     const result = await newServices.deleteOne(query);
+
+    if (result.deletedCount) {
+      res.send({
+        success: true,
+        message: "Delete successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Delete fail!",
+      });
+    }
+  } finally {
+  }
+});
+
+// raging delete
+app.delete("/userRating/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const result = await userRating.deleteOne(query);
 
     if (result.deletedCount) {
       res.send({
