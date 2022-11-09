@@ -43,6 +43,11 @@ const bookingInfo = client
 // blog information
 const blogInfo = client.db("tourist-service-server").collection("blog");
 
+// blog information
+const newServices = client
+  .db("tourist-service-server")
+  .collection("newServices");
+
 // service query
 app.get("/services", async (req, res) => {
   try {
@@ -69,7 +74,7 @@ app.get("/tourist-all-services/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
     const result = await touristAllServices.findOne(query);
-    console.log(result);
+    // console.log(result);
     res.send(result);
   } finally {
   }
@@ -80,6 +85,16 @@ app.get("/blog", async (req, res) => {
   const cursor = blogInfo.find({});
   const result = await cursor.toArray();
   res.send(result);
+});
+
+// new service data query
+app.get("/newServices", async (req, res) => {
+  try {
+    const cursor = newServices.find({});
+    const result = await cursor.toArray();
+    res.send(result);
+  } finally {
+  }
 });
 
 // post method
@@ -97,6 +112,27 @@ app.post("/booking", async (req, res) => {
       success: false,
       error: "Your form send is fail!",
     });
+  }
+});
+
+// added a new service
+app.post("/newServices", async (req, res) => {
+  try {
+    const result = await newServices.insertOne(req.body);
+    console.log(result);
+
+    if (result.acknowledged) {
+      res.send({
+        success: true,
+        message: "Service added successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Service added fail!",
+      });
+    }
+  } finally {
   }
 });
 
