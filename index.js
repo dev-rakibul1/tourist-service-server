@@ -136,6 +136,28 @@ app.post("/newServices", async (req, res) => {
   }
 });
 
+// delete data
+app.delete("/newServices/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const result = await newServices.deleteOne(query);
+
+    if (result.deletedCount) {
+      res.send({
+        success: true,
+        message: "Delete successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Delete fail!",
+      });
+    }
+  } finally {
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("Hello world! Tourist server is running.");
 });
