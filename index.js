@@ -109,6 +109,60 @@ app.get("/userRating", async (req, res) => {
   } finally {
   }
 });
+// booking info query
+app.get("/bookingInfo", async (req, res) => {
+  try {
+    const cursor = bookingInfo.find({});
+    const result = await cursor.toArray();
+    res.send(result);
+  } finally {
+  }
+});
+
+// newServices info query
+app.get("/update/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const result = await newServices.findOne(query);
+    res.send(result);
+  } finally {
+  }
+});
+
+// newServices info put method
+app.put("/update/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filter = { _id: ObjectId(id) };
+    const user = req.body;
+    const option = { upsert: true };
+    const updatedUser = {
+      $set: {
+        sTitle: user.sTitle,
+        img: user.img,
+        rating: user.rating,
+        charge: user.charge,
+        place: user.place,
+        message: user.message,
+        area: user.area,
+      },
+    };
+    const result = await newServices.updateOne(filter, updatedUser, option);
+    if (result.acknowledged) {
+      res.send({
+        success: true,
+        message: "Update success",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Update fail!",
+      });
+    }
+  } finally {
+  }
+});
 
 // post method
 app.post("/booking", async (req, res) => {
@@ -196,6 +250,28 @@ app.delete("/userRating/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
     const result = await userRating.deleteOne(query);
+
+    if (result.deletedCount) {
+      res.send({
+        success: true,
+        message: "Delete successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Delete fail!",
+      });
+    }
+  } finally {
+  }
+});
+
+// bookingInfo delete
+app.delete("/bookingInfo/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const result = await bookingInfo.deleteOne(query);
 
     if (result.deletedCount) {
       res.send({
