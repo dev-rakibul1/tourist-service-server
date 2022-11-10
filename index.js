@@ -64,7 +64,7 @@ app.get("/services", async (req, res) => {
 // tourist all services
 app.get("/tourist-all-services", async (req, res) => {
   try {
-    const cursor = touristAllServices.find({});
+    const cursor = touristAllServices.find({}).sort({ rating: -1 });
     const result = await cursor.toArray();
     res.send(result);
   } finally {
@@ -129,6 +129,16 @@ app.get("/update/:id", async (req, res) => {
   } finally {
   }
 });
+// usr rating info query
+app.get("/userRating/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const result = await userRating.findOne(query);
+    res.send(result);
+  } finally {
+  }
+});
 
 // newServices info put method
 app.put("/update/:id", async (req, res) => {
@@ -149,6 +159,38 @@ app.put("/update/:id", async (req, res) => {
       },
     };
     const result = await newServices.updateOne(filter, updatedUser, option);
+    if (result.acknowledged) {
+      res.send({
+        success: true,
+        message: "Update success",
+      });
+    } else {
+      res.send({
+        success: false,
+        error: "Update fail!",
+      });
+    }
+  } finally {
+  }
+});
+
+// user rating info put method
+app.put("/userRating/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const filter = { _id: ObjectId(id) };
+    const user = req.body;
+    const option = { upsert: true };
+    const updatedUser = {
+      $set: {
+        title: user.title,
+        images: user.images,
+        rating: user.rating,
+        message: user.message,
+      },
+    };
+    const result = await userRating.updateOne(filter, updatedUser, option);
     if (result.acknowledged) {
       res.send({
         success: true,
